@@ -28,11 +28,11 @@
         }
 
         .selecionado {
-            color:red;
+            color: red;
         }
 
         .negrito {
-          font-weight: bold;
+            font-weight: bold;
         }
     </style>
     <script src="js/angular.js"></script>
@@ -42,15 +42,33 @@
             $scope.app = "Lista Telefônica";
             $scope.contatos = [{
                     nome: "Pedro",
-                    telefone: "9999-88888"
+                    telefone: "9999-88888",
+                    cor: "red",
+                    operadora: {
+                        nome: "Oi",
+                        codigo: 13,
+                        categoria: "Celular"
+                    }
                 },
                 {
                     nome: "Lucas",
-                    telefone: "9777-88888"
+                    telefone: "9777-88888",
+                    cor: "yellow",
+                    operadora: {
+                        nome: "Embratel",
+                        codigo: 21,
+                        categoria: "Fixo"
+                    }
                 },
                 {
                     nome: "Gabriel",
-                    telefone: "9669-88888"
+                    telefone: "9669-88888",
+                    cor: "blue",
+                    operadora: {
+                        nome: "Vivo",
+                        codigo: 15,
+                        categoria: "Celular"
+                    }
                 }
             ];
             $scope.operadoras = [{
@@ -83,6 +101,18 @@
                 $scope.contatos.push(angular.copy(contato));
                 delete $scope.contato;
             };
+
+            $scope.apagarContatos = function(contatos) {
+                $scope.contatos = contatos.filter(function(contato) {
+                    if (!contato.selecionado) return contato;
+                });
+            };
+
+            $scope.isContatoSelecionado = function(contatos) {
+                return contatos.some(function(contato) {
+                    return contato.selecionado;
+                });
+            };
         });
     </script>
 </head>
@@ -90,7 +120,6 @@
 <body ng-controller="listaTelefonicaCtrl">
     <div class="jumbotron">
         <h3 ng-bind="app"></h3>
-        {{contatos}}
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -98,14 +127,16 @@
                     <th>Nome</th>
                     <th>Telefone</th>
                     <th>Operadora</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="contato in contatos" ng-class="{selecionado: contato.selecionado, negrito: contato.selecionado}">
+                <tr ng-repeat="contato in contatos" ng-class="{'selecionado negrito': contato.selecionado }">
                     <td><input type="checkbox" ng-model="contato.selecionado" /></td>
                     <td>{{contato.nome}}</td>
                     <td>{{contato.telefone}}</td>
                     <td>{{contato.operadora.nome}}</td>
+                    <td><div style="width:20px; height:20px;" ng-style="{'background-color': contato.cor}"></div></td>
                 </tr>
             </tbody>
         </table>
@@ -116,6 +147,7 @@
         <option value="">Selecione uma operadora</option>
       </select>
         <button class="btn btn-primary btn-block botao" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
+        <button class="btn btn-danger btn-block botao" ng-click="apagarContatos(contatos)" ng-disabled="!isContatoSelecionado(contatos)">Apagar Contatos</button>
     </div>
 </body>
 
